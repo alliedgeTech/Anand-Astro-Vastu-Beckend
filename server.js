@@ -4,7 +4,7 @@ const cors = require('cors');
 const { emailTemplate } = require('./email');
 require("dotenv").config();
 
-// const oemail = "anandastrotalk@gmail.com";
+const oemail = "anandastrotalk@gmail.com";
 const PORT = process.env.PORT || 5000;
 
 const app = express();
