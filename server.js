@@ -1,28 +1,25 @@
 const express = require('express');
 const nodemailer = require('nodemailer');
-const fs = require('fs').promises;
 const cors = require('cors');
 const { emailTemplate } = require('./email');
-const oemail="anandastrotalk@gmail.com"
 require("dotenv").config();
 
+// const oemail = "anandastrotalk@gmail.com";
 const PORT = process.env.PORT || 5000;
 
 const app = express();
+
 // Set up Express middleware
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors());
 
-
-// Define routes
-
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
-    user: 'n03544571@gmail.com', // Replace with your email
-    pass: 'krydprmexkdthpae' // Replace with your password (avoid storing in code)
-  }
+    user: "n03544571@gmail.com",
+    pass: "krydprmexkdthpae", 
+  },
 });
 
 app.get('/', (req, res) => {
@@ -30,13 +27,11 @@ app.get('/', (req, res) => {
 });
 
 app.post('/submit', async (req, res) => {
-  console.log("this is got the req");
-  
-  // Read the email.html template (optional for client email)
+  console.log("Request received");
 
   const mailOptionsToOwner = {
-    from: req.body.email, // Replace with your email
-    to: oemail, // Your email address (business owner)
+    from: req.body.email, 
+    to: "n03544571@gmail.com", 
     subject: 'New Inquiry Received',
     text: `A new inquiry has been received from:
             Name: ${req.body.name}
@@ -47,10 +42,10 @@ app.post('/submit', async (req, res) => {
   };
 
   const mailOptionsToClient = {
-    from: oemail, // Replace with your email
-    to: req.body.email, // User's email address (client)
+    from: oemail, 
+    to: req.body.email, 
     subject: 'Thank You for Your Inquiry',
-    html: emailTemplate // Send the entire email template as HTML content (if available)
+    html: emailTemplate() // Ensure emailTemplate() returns valid HTML
   };
 
   try {
@@ -62,11 +57,10 @@ app.post('/submit', async (req, res) => {
     await transporter.sendMail(mailOptionsToClient);
     console.log('Email to client sent');
 
-   res.send('success');
-    // res.send('success');
+    res.send('success');
   } catch (error) {
     console.error('Error:', error);
-    res.send('error');
+    res.status(500).json({ message: 'Error sending email', error: error.message });
   }
 });
 
